@@ -6,7 +6,7 @@ about:
   links:
     - icon: twitter
       text: Twitter
-      href: https://twitter.com
+      href: https://x.com/DekelWainer
     - icon: linkedin
       text: LinkedIn
       href: https://www.linkedin.com/in/dekelwainer/
