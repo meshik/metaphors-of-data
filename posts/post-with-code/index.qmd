@@ -2,8 +2,18 @@
 title: "Post With Code"
 author: "Harlow Malloc"
 date: "2025-03-16"
-categories: [news, code, analysis]
+categories: [SQL, reliability]
 image: "image.jpg"
 ---
 
-This is a post with executable code.
+The problem:
+Making Python code interact with an SQL database is pretty straightforward.
+For instance, with pyodbc we can do
+
+```{Python}
+import pyodbc
+cursor...
+```
+
+But consider a complex program that has to do multiple SQL queries to fill in a database.
+Importantly, an entire program run has to be committed together to SQL, or you risk data integrity issues (like for patients).
