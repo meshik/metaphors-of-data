@@ -1,19 +1,51 @@
 ---
-title: "Post With Code"
-author: "Harlow Malloc"
+title: "Robust SQL calls from Python"
+author: "Dekel Wainer"
 date: "2025-03-16"
 categories: [SQL, reliability]
-image: "image.jpg"
+image: "image.png"
 ---
 
-The problem:
-Making Python code interact with an SQL database is pretty straightforward.
-For instance, with pyodbc we can do
+Making Python code interact with an SQL database is straightforward.
+Imagine you're using Azure SQL and want to insert data into 2 tables. You might generate this code:
 
 ```{Python}
+import os
 import pyodbc
-cursor...
+
+conn_str = os.getenv("sql_connection_string")  # secret connection string
+
+with pyodbc.connect(conn_str) as conn:
+    with conn.cursor() as cursor:
+
+        insert_query = """
+            INSERT INTO some_table (field1, field2, field3)  # the actual names in the database
+            VALUES (?, ?, ?)
+        """
+        cursor.execute(insert_query, (field1, field2, field3))  # the variables in Python
+        conn.commit()
+
+        insert_query = """
+            INSERT INTO another_table (field1, field2)
+            VALUES (?, ?)
+        """
+        cursor.execute(insert_query, (field4, field5)) 
+        conn.commit()
 ```
 
-But consider a complex program that has to do multiple SQL queries to fill in a database.
-Importantly, an entire program run has to be committed together to SQL, or you risk data integrity issues (like for patients).
+A vibe-coding developer might stop here, assured by the LLM that this is good implementation because:
+    - The connection string isn't being exposed.
+    - Placeholders (the '?') are being used to protect against SQL injection.
+    - A context manager is used (the 'with' statements), which automatically closes the connection to the SQL database.
+
+But it's not good implementation, because there's no error handling.
+This means any communication or schema error will result in unexpected behavior in the program.
+Even worse, if an error occurs after the first query is committed but the second isn't, your database only contains partial data.
+
+So a better approach is to add explicit error handling, and commit data after all queries have succeeded.
+
+```{Python}
+
+```
+
+But what if you 

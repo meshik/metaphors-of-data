@@ -1,0 +1,62 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Post With Code\"\n",
+        "author: \"Harlow Malloc\"\n",
+        "date: \"2025-03-16\"\n",
+        "categories: [SQL, reliability]\n",
+        "image: \"image.jpg\"\n",
+        "---\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "The problem:\n",
+        "Making Python code interact with an SQL database is pretty straightforward.\n",
+        "Imagine you're using Azure SQL and want to insert data into that database.\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "```{Python}\n",
+        "import pyodbc\n",
+        "\n",
+        "conn_str = os.getenv(\"AZURE_SQL_CONN_STR\")  # secret connection string\n",
+        "\n",
+        "with pyodbc.connect(conn_str) as conn:\n",
+        "    with conn.cursor() as cursor:\n",
+        "\n",
+        "        insert_query = \"\"\"\n",
+        "            INSERT INTO form_data (user_id, field_text_1, field_text_2)\n",
+        "            VALUES (?, ?, ?, ?)\n",
+        "        \"\"\"\n",
+        "        cursor.execute(insert_query, (user_id, field_text_1, field_text_2))\n",
+        "        conn.commit()\n",
+        "```\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "Why the ?... \n",
+        "\n",
+        "But consider a complex program that has to do multiple SQL queries to fill in a database.\n",
+        "Importantly, an entire program run has to be committed together to SQL, or you risk data integrity issues (like for patients)."
+      ],
+      "id": "1519a3df"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "display_name": "Python 3",
+      "language": "python",
+      "name": "python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
