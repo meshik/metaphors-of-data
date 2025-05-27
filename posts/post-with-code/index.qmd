@@ -19,14 +19,14 @@ with pyodbc.connect(conn_str) as conn:
     with conn.cursor() as cursor:
 
         insert_query = """
-            INSERT INTO some_table (field1, field2, field3)  # the actual names in the database
+            INSERT INTO some_table (field1, field2, field3)  -- fieldN are the actual fields in the database
             VALUES (?, ?, ?)
         """
-        cursor.execute(insert_query, (field1, field2, field3))  # the variables in Python
+        cursor.execute(insert_query, (field1, field2, field3))  # fieldN here are the variables in Python
         conn.commit()
 
         insert_query = """
-            INSERT INTO another_table (field1, field2)
+            INSERT INTO another_table (field4, field5)
             VALUES (?, ?)
         """
         cursor.execute(insert_query, (field4, field5)) 
@@ -35,7 +35,7 @@ with pyodbc.connect(conn_str) as conn:
 
 A vibe-coding developer might stop here, assured by the LLM that this is good implementation because:
     - The connection string isn't being exposed.
-    - Placeholders (the '?') are being used to protect against SQL injection.
+    - Placeholders (the '?') are being used, which protects against SQL injection.
     - A context manager is used (the 'with' statements), which automatically closes the connection to the SQL database.
 
 But it's not good implementation, because there's no error handling.
@@ -48,4 +48,12 @@ So a better approach is to add explicit error handling, and commit data after al
 
 ```
 
-But what if you 
+But what if you don't have all the information needed to commit concurrently in a single script?
+For instance, you collect data from dozens of APIs with complex transformations and integrations.
+
+You can simply call a class into each relevant script, and append the query you want to commit.
+Then, at some later point in the program, you loop over that list and write the queries to the database.
+
+```{Python}
+
+```
