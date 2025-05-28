@@ -42,18 +42,70 @@ But it's not good implementation, because there's no error handling.
 This means any communication or schema error will result in unexpected behavior in the program.
 Even worse, if an error occurs after the first query is committed but the second isn't, your database only contains partial data.
 
-So a better approach is to add explicit error handling, and commit data after all queries have succeeded.
+So a better approach is to add explicit error handling, and commit data *after* all queries have succeeded.
+Nothing gets committed unless everything runs smoothly.
 
 ```{Python}
+try:
+    with pyodbc.connect(conn_str) as conn:
+        with conn.cursor() as cursor:
+            insert_query_1 = """
+                INSERT INTO some_table (field1, field2, field3)
+                VALUES (?, ?, ?)
+            """
+            cursor.execute(insert_query_1, (field1, field2, field3))
 
+            insert_query_2 = """
+                INSERT INTO another_table (field4, field5)
+                VALUES (?, ?)
+            """
+            cursor.execute(insert_query_2, (field4, field5))
+
+        conn.commit()
+
+except Exception as e:
+    print(f"Database operation failed: {e}")
+    conn.rollback()
 ```
 
 But what if you don't have all the information needed to commit concurrently in a single script?
-For instance, you collect data from dozens of APIs with complex transformations and integrations.
+For instance, if you collect data across dozens of scripts across a single program run there is no opportunity to commit everything at once.
 
-You can simply call a class into each relevant script, and append the query you want to commit.
+Instead, you can call a stable class into each relevant script, and append the query you want to commit.
 Then, at some later point in the program, you loop over that list and write the queries to the database.
 
 ```{Python}
+# define this class in a helper module
+class QueryCollector:
+    def __init__(self):
+        self.queries = []
 
+    def add(self, query, params):
+        self.queries.append((query, params))
+
+    def execute_all(self, conn_str):
+        try:
+            with pyodbc.connect(conn_str) as conn:
+                with conn.cursor() as cursor:
+                    for query, params in self.queries:
+                        cursor.execute(query, params)
+                conn.commit()
+        except Exception as e:
+            print(f"Error during batched SQL execution: {e}")
+            conn.rollback()
+
+
+# call the class in any script that needs it
+collector = QueryCollector()
+
+collector.add(
+    "INSERT INTO some_table (field1, field2, field3) VALUES (?, ?, ?)",
+    (field1, field2, field3)
+)
+
+
+# commit everything at a later point in the program, once you collected all your queries
+collector.execute_all(os.getenv("sql_connection_string"))
 ```
+
+Now you have a centralized solution which can be expanded to robustly log and handle all types of errors gracefully.
