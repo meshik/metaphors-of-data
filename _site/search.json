@@ -1,30 +1,30 @@
 [
   {
-    "objectID": "posts/welcome/index.html",
-    "href": "posts/welcome/index.html",
-    "title": "Welcome To My Blog",
-    "section": "",
-    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
-  },
-  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Metaphors of Data",
     "section": "",
-    "text": "Post With Code\n\n\n\n\n\n\nnews\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\nMar 16, 2025\n\n\nHarlow Malloc\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nMar 13, 2025\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+    "text": "Robust SQL calls from Python\n\n\n\n\n\n\nSQL\n\n\nPython\n\n\nreliability\n\n\n\n\n\n\n\n\n\nMay 29, 2025\n\n\nDekel Wainer\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome To My Blog\n\n\n\n\n\n\nnews\n\n\n\n\n\n\n\n\n\nMar 13, 2025\n\n\nTristan O’Malley\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Robust SQL calls from Python",
+    "section": "",
+    "text": "Making Python code interact with an SQL database is straightforward. Imagine you’re using a cloud SQL and want to insert data into 2 tables. You might generate this code:\n\nimport os\nimport pyodbc\n\nconn_str = os.getenv(\"sql_connection_string\")  # secret connection string\n\nwith pyodbc.connect(conn_str) as conn:\n    with conn.cursor() as cursor:\n\n        insert_query = \"\"\"\n            INSERT INTO some_table (field1, field2, field3)  -- fieldN are the actual fields in the database\n            VALUES (?, ?, ?)\n        \"\"\"\n        cursor.execute(insert_query, (field1, field2, field3))  # fieldN here are the variables in Python\n        conn.commit()\n\n        insert_query = \"\"\"\n            INSERT INTO another_table (field4, field5)\n            VALUES (?, ?)\n        \"\"\"\n        cursor.execute(insert_query, (field4, field5)) \n        conn.commit()\n\nA vibe-coding developer might stop here, assured by the LLM that this is good implementation because: - The connection string isn’t being exposed. - Placeholders (the ‘?’) are being used, which protects against SQL injection. - A context manager is used (the ‘with’ statements), which automatically closes the connection to the SQL database.\nBut it’s not good implementation, because there’s no error handling. This means any communication or schema error will result in unexpected behavior in the program. Worse still, if an error occurs after the first query is committed but the second isn’t, your database only contains partial data.\nSo a better approach is to add explicit error handling, and commit data after all queries have succeeded. Nothing gets committed unless everything runs smoothly.\n\ntry:\n    with pyodbc.connect(conn_str) as conn:\n        with conn.cursor() as cursor:\n            insert_query_1 = \"\"\"\n                INSERT INTO some_table (field1, field2, field3)\n                VALUES (?, ?, ?)\n            \"\"\"\n            cursor.execute(insert_query_1, (field1, field2, field3))\n\n            insert_query_2 = \"\"\"\n                INSERT INTO another_table (field4, field5)\n                VALUES (?, ?)\n            \"\"\"\n            cursor.execute(insert_query_2, (field4, field5))\n\n        # commit once\n        conn.commit()\n\nexcept Exception as e:\n    print(f\"Database operation failed: {e}\")\n    conn.rollback()\n\nBut what if you don’t have all the information needed to commit concurrently in a single script? For instance, if your program collects data across dozens of scripts - there is no opportunity to commit everything at once.\nInstead, you can call a stable class into each relevant script, and append the query you want to commit. Then, at some later point in the program, you loop over that list and write the queries to the database.\n\n# define this class in a helper module\nclass QueryCollector:\n    def __init__(self):\n        self.queries = []\n\n    def add(self, query, params):\n        self.queries.append((query, params))\n\n    def execute_all(self, conn_str):\n        try:\n            with pyodbc.connect(conn_str) as conn:\n                with conn.cursor() as cursor:\n                    for query, params in self.queries:\n                        cursor.execute(query, params)\n                conn.commit()\n        except Exception as e:\n            print(f\"Error during batched SQL execution: {e}\")\n            conn.rollback()\n\n\n# call the class in any script that needs it\ncollector = QueryCollector()\n\ncollector.add(\n    \"INSERT INTO some_table (field1, field2, field3) VALUES (?, ?, ?)\",\n    (field1, field2, field3)\n)\n\n\n# commit everything at a later point in the program, once you collected all your queries\ncollector.execute_all(os.getenv(\"sql_connection_string\"))\n\nNow you have a centralized solution which is easy to expand. For example, you can add complex error handling, query-level logging, retries, or group commits to reduce I/O.”"
   },
   {
     "objectID": "about.html",
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "Why “metaphors”? This explanation is hard. But if you pay attention and follow along, you’ll be close to under-standing.\nMetaphors aren’t just simple comparisons. They are ubiquitous frameworks that modify our perception to enhance our understanding of reality.\nThis is the role of information technology - to unveil real patterns with connections that are otherwise hidden."
+    "text": "Why “metaphors”? This explanation might be hard. But if you pay attention and follow along, you’ll be close to under-standing.\nMetaphors aren’t simple comparisons. They are ubiquitous frameworks that modify our perception to enhance our understanding of reality.\nThis is the role of information technology - to unveil real patterns with connections that are otherwise hidden."
   },
   {
-    "objectID": "posts/post-with-code/index.html",
-    "href": "posts/post-with-code/index.html",
-    "title": "Post With Code",
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "Welcome To My Blog",
     "section": "",
-    "text": "This is a post with executable code."
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts."
   }
 ]

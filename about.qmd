@@ -17,9 +17,9 @@ about:
 ---
 
 Why "metaphors"?
-This explanation is **hard**. But if you **pay** attention and **follow** along, you'll be **close** to **under**-**standing**.
+This explanation might be **hard**. But if you **pay** attention and **follow** along, you'll be **close** to **under**-**standing**.
 
-Metaphors aren't just simple comparisons.
+Metaphors aren't simple comparisons.
 They are ubiquitous frameworks that modify our perception to enhance our understanding of reality.
 
 This is the role of information technology - to unveil real patterns with connections that are otherwise hidden.
