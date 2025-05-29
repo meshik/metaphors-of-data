@@ -191,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Making Python code interact with an SQL database is straightforward. Imagine you’re using a cloud SQL and want to insert data into 2 tables. You might generate this code:</p>
-<div id="759460b3" class="cell" data-execution_count="1">
+<div id="d14ba557" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pyodbc</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -217,7 +217,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>A vibe-coding developer might stop here, assured by the LLM that this is good implementation because: - The connection string isn’t being exposed. - Placeholders (the ‘?’) are being used, which protects against SQL injection. - A context manager is used (the ‘with’ statements), which automatically closes the connection to the SQL database.</p>
 <p>But it’s not good implementation, because there’s no error handling. This means any communication or schema error will result in unexpected behavior in the program. Worse still, if an error occurs after the first query is committed but the second isn’t, your database only contains partial data.</p>
 <p>So a better approach is to add explicit error handling, and commit data after all queries have succeeded. Nothing gets committed unless everything runs smoothly.</p>
-<div id="1f29d3c3" class="cell" data-execution_count="2">
+<div id="c2b9bc7a" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">with</span> pyodbc.<span class="ex">connect</span>(conn_str) <span class="im">as</span> conn:</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> conn.cursor() <span class="im">as</span> cursor:</span>
@@ -242,7 +242,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>But what if you don’t have all the information needed to commit concurrently in a single script? For instance, if your program collects data across dozens of scripts - there is no opportunity to commit everything at once.</p>
 <p>Instead, you can call a stable class into each relevant script, and append the query you want to commit. Then, at some later point in the program, you loop over that list and write the queries to the database.</p>
-<div id="a3c36317" class="cell" data-execution_count="3">
+<div id="1f2fcc67" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># define this class in a helper module</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> QueryCollector:</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</span>

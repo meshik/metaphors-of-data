@@ -3,7 +3,7 @@ title: "Robust SQL calls from Python"
 author: "Dekel Wainer"
 date: "2025-05-29"
 categories: [SQL, Python, reliability]
-image: "image.png"
+image: "image.jpg"
 ---
 
 Making Python code interact with an SQL database is straightforward.
