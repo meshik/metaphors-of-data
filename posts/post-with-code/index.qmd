@@ -1,8 +1,8 @@
 ---
 title: "Robust SQL calls from Python"
 author: "Dekel Wainer"
-date: "2025-03-16"
-categories: [SQL, reliability]
+date: "2025-05-29"
+categories: [SQL, Python, reliability]
 image: "image.png"
 ---
 
@@ -61,6 +61,7 @@ try:
             """
             cursor.execute(insert_query_2, (field4, field5))
 
+        # commit once
         conn.commit()
 
 except Exception as e:
@@ -69,7 +70,7 @@ except Exception as e:
 ```
 
 But what if you don't have all the information needed to commit concurrently in a single script?
-For instance, if you collect data across dozens of scripts across a single program run there is no opportunity to commit everything at once.
+For instance, if your program collects data across dozens of scripts - there is no opportunity to commit everything at once.
 
 Instead, you can call a stable class into each relevant script, and append the query you want to commit.
 Then, at some later point in the program, you loop over that list and write the queries to the database.
