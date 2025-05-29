@@ -7,9 +7,10 @@ image: "image.png"
 ---
 
 Making Python code interact with an SQL database is straightforward.
-Imagine you're using Azure SQL and want to insert data into 2 tables. You might generate this code:
+Imagine you're using a cloud SQL and want to insert data into 2 tables. You might generate this code:
 
-```{Python}
+```{python}
+#| eval: false
 import os
 import pyodbc
 
@@ -40,12 +41,13 @@ A vibe-coding developer might stop here, assured by the LLM that this is good im
 
 But it's not good implementation, because there's no error handling.
 This means any communication or schema error will result in unexpected behavior in the program.
-Even worse, if an error occurs after the first query is committed but the second isn't, your database only contains partial data.
+Worse still, if an error occurs after the first query is committed but the second isn't, your database only contains partial data.
 
-So a better approach is to add explicit error handling, and commit data *after* all queries have succeeded.
+So a better approach is to add explicit error handling, and commit data after all queries have succeeded.
 Nothing gets committed unless everything runs smoothly.
 
-```{Python}
+```{python}
+#| eval: false
 try:
     with pyodbc.connect(conn_str) as conn:
         with conn.cursor() as cursor:
@@ -75,7 +77,8 @@ For instance, if your program collects data across dozens of scripts - there is 
 Instead, you can call a stable class into each relevant script, and append the query you want to commit.
 Then, at some later point in the program, you loop over that list and write the queries to the database.
 
-```{Python}
+```{python}
+#| eval: false
 # define this class in a helper module
 class QueryCollector:
     def __init__(self):
@@ -109,4 +112,4 @@ collector.add(
 collector.execute_all(os.getenv("sql_connection_string"))
 ```
 
-Now you have a centralized solution which can be expanded to robustly log and handle all types of errors gracefully.
+Now you have a centralized solution which is easy to expand. For example, you can add complex error handling, query-level logging, retries, or group commits to reduce I/O.”
