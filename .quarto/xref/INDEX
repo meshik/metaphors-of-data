@@ -10,5 +10,8 @@
   },
   "posts/welcome/index.qmd": {
     "index.html": "f1d3cc81"
+  },
+  "posts/python-sql-robust/index.qmd": {
+    "index.html": "3cbb3580"
   }
 }
